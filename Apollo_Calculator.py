@@ -36,11 +36,14 @@ class Calculator:
         return self.num_1 ** self.num_2
 
     def modulo(self):
-        if self.num_1 % self.num_2 == 0:
-            return f"{self.num_1} can be divided by {self.num_2}"
+        try:
+            if self.num_1 % self.num_2 == 0:
+                return f"{self.num_1} can be divided by {self.num_2}"
 
-        else:
-            return "No full division possible!"
+            else:
+                return "No full division possible!"
+        except ZeroDivisionError:
+            return "Can't Divide by Zero!"
 
 
 # start of the program by giving the user choices to choose from
@@ -49,7 +52,7 @@ print(f"  Current time is {current_time}")
 print(" ")
 print("   Press 1- **Basic Calculator**")
 print("   Press 2- **Graphical Calculator**")
-print("   Press 3- **Plot Graphics directly**")
+print("   Press 3- **Graphics only mode**")
 print(" ")
 while True:
     try:
@@ -132,7 +135,7 @@ while True:
                         continue  # Continue to the next iteration of the loop
 
                     elif choice.lower() == "exit":
-                        print("**Closing the program, see you soon !**")
+                        print("**Closing Basic Calculator, see you soon !**")
                         break  # Exit the loop if the user wants to exit
 
                 except ValueError:
@@ -177,7 +180,7 @@ while True:
                     print(f"**Integral is {integrate_function} + C **")
 
                 view_input = str(input("-Do you want to view the plot of the function? (Y for yes , N for no, "
-                                       "E to exit program: "))
+                                       "E to exit program): "))
 
                 if view_input.lower() == "y":
                     # will open a window to display the function
@@ -192,10 +195,11 @@ while True:
                     plt.grid(True)
                     plt.show()
                 elif view_input.lower() == "n":
-                    print("T**he program resets**")
+                    print("**Reseting Graphical Calculator**")
+                    print(" ")
                     continue
                 else:
-                    print("**Closing the program, see you soon !**")
+                    print("**Closing Graphing Calculator, see you soon !**")
                     break
         if mode_choice == 3:
             print("**Welcome to Graphical only mode**")
@@ -218,11 +222,14 @@ while True:
                     if mode_3.lower() == "y":
                         continue
                     elif mode_3.lower() == "n":
-                        print("**Closing the program, see you soon !**")
+                        print("**Closing Graphics only mode, see you soon !**")
                         break
                 except ValueError:
                     print("Wrong input, Reset the program and try again")
 
     except ValueError:
         print("**Wrong input, Please try again!**")  # Handle invalid inputs
+
+    finally:
+        print("**Developed by CollectorsObservatory**")
 
