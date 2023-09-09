@@ -45,7 +45,7 @@ class Calculator:
 # start of the program by giving the user choices to choose from
 print("   Welcome to Apollo Calculator   ")
 print("   Press 1- for Basic calculator")
-print("   Press 2- for graphical calculator")
+print("   Press 2- for graphing calculator")
 print("   Press ctrl+r to rest")
 while True:
     try:
