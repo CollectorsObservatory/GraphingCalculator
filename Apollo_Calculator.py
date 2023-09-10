@@ -50,13 +50,15 @@ class Calculator:
 print("   ***Welcome to Apollo Calculator***   ")    # Print a welcome message
 print(f"  Current time is {current_time}")
 print(" ")
+print("   Here are the available modes:")
 print("   Press 1- **Basic Calculator**")
 print("   Press 2- **Graphical Calculator**")
 print("   Press 3- **Graphics only mode**")
+print("   Press 4- **Equation Solver**")
 print(" ")
 while True:
     try:
-        mode_choice = int(input("-Please choose the right mode: "))
+        mode_choice = int(input("-Please choose the mode: "))
         if mode_choice == 1:
             ans_list = []  # used later to store the last result to be used again
             # Define a list of valid operators
@@ -205,27 +207,52 @@ while True:
             print("**Welcome to Graphical only mode**")
             while True:
                 function = input("-Enter function using x: ")
-                x = sp.symbols("x")  # x is the variable symbol by default as stated to the user
-                f_func = sp.lambdify(x, function, 'numpy')
-                x_values = np.linspace(-15, 15, 400)
-                y_values = [f_func(x_val) for x_val in x_values]
-                plt.figure(figsize=(10, 8))
-                plt.plot(x_values, y_values, label=function)
-                plt.xlabel('x')
-                plt.ylabel('y')
-                plt.legend()
-                plt.title(f'Plot of the function:{function}')
-                plt.grid(True)
-                plt.show()
-                mode_3 = str(input("Do you wish to continue using this mode?(y or n): "))
                 try:
-                    if mode_3.lower() == "y":
-                        continue
-                    elif mode_3.lower() == "n":
-                        print("**Closing Graphics only mode, see you soon !**")
-                        break
+                    x = sp.symbols("x")  # x is the variable symbol by default as stated to the user
+                    f_func = sp.lambdify(x, function, 'numpy')
+                    x_values = np.linspace(-15, 15, 400)
+                    y_values = [f_func(x_val) for x_val in x_values]
+                    plt.figure(figsize=(10, 8))
+                    plt.plot(x_values, y_values, label=function)
+                    plt.xlabel('x')
+                    plt.ylabel('y')
+                    plt.legend()
+                    plt.title(f'Plot of the function:{function}')
+                    plt.grid(True)
+                    plt.show()
+                    mode_3 = str(input("Do you wish to continue using this mode?(y or n): "))
+                    try:
+                        if mode_3.lower() == "y":
+                            continue
+                        elif mode_3.lower() == "n":
+                            print("**Closing Graphics only mode, see you soon !**")
+                            break
+                    except ValueError:
+                        print("Wrong input, Reset the program and try again")
                 except ValueError:
                     print("Wrong input, Reset the program and try again")
+
+        if mode_choice == 4:
+            print("**Welcome to equation solver**")
+            print("** x is by default the symbol of the variable **")
+            while True:
+                x = sp.symbols('x')
+                enter_basic_calculation = input("Enter your equation: ")
+                try:
+                    solution = sp.solve(enter_basic_calculation, x)
+                    print(f"solution is: {solution}")
+                    mode_4 = str(input("Do you wish to continue using this mode?(y or n): "))
+                    try:
+                        if mode_4.lower() == "y":
+                            continue
+                        elif mode_4.lower() == "n":
+                            print("**Closing Graphics only mode, see you soon !**")
+                            break
+                    except ValueError:
+                        print("Wrong input, Reset the program and try again")
+
+                except ValueError:
+                    print("Wrong input , please try again !")
 
     except ValueError:
         print("**Wrong input, Please try again!**")  # Handle invalid inputs
