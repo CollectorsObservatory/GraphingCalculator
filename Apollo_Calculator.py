@@ -2,8 +2,11 @@ import datetime
 import sympy as sp
 import numpy as np
 import matplotlib.pyplot as plt
+
 now = datetime.datetime.now()
 current_time = now.strftime("%Y-%m-%d %H:%M:%S")
+x = sp.symbols("x")
+
 
 # basically a program with two modes basic and graphical calculator
 # graphical calculator calculates derivatives , integrals and plots a graphic
@@ -11,6 +14,7 @@ current_time = now.strftime("%Y-%m-%d %H:%M:%S")
 
 class Calculator:
     """Basic functions of calculator"""
+
     def __init__(self, num_1, num_2, operation, ans=0):
         self.num_1 = num_1
         self.num_2 = num_2
@@ -18,36 +22,91 @@ class Calculator:
         self.operation = operation
 
     def addition(self):
+        """Adds 2 numbers"""
         return self.num_1 + self.num_2
 
     def subs(self):
+        """Substratcs 2 numbers"""
         return self.num_1 - self.num_2
 
     def multiply(self):
+        """Multiplies 2 numbers"""
         return self.num_1 * self.num_2
 
     def division(self):
+        """Divides two numbers"""
         try:
             return self.num_1 / self.num_2
         except ZeroDivisionError:
             return "Can't Divide by Zero!"
 
     def power(self):
+        """Return one number to the power of the second number"""
         return self.num_1 ** self.num_2
 
     def modulo(self):
+        """Checks if one number can be divided by another"""
         try:
             if self.num_1 % self.num_2 == 0:
                 return f"{self.num_1} can be divided by {self.num_2}"
-
             else:
                 return "No full division possible!"
         except ZeroDivisionError:
             return "Can't Divide by Zero!"
 
+    def calculator_suite(self):
+        """This function checks the operation input by the user and assigns the right method to it"""
+        if self.operation == "+":
+            return self.addition()
+        elif self.operation == "-":
+            return self.subs()
+        elif self.operation == "**":
+            return self.power()
+        elif self.operation == "*":
+            return self.multiply()
+        elif self.operation == "/":
+            return self.division()
+        elif self.operation == "%":
+            return self.modulo()
+
+
+class Function:
+    """Serves to see the first integral and derivative to a function and to plot it"""
+
+    def __init__(self, function):
+        self.function = sp.simplify(function)
+
+    def derivative(self):
+        """Retuns the derivative"""
+        return sp.diff(self.function, x)
+
+    def integrate(self):
+        """Returns the integral"""
+        return sp.integrate(self.function, x)
+
+    def plot(self):
+        """Plots the graph of the function"""
+        f_func = sp.lambdify(x, self.function, 'numpy')
+        f_derivative_func = sp.lambdify(x, self.derivative(), 'numpy')
+        f_integrate_func = sp.lambdify(x, self.integrate(), 'numpy')
+        x_values = np.linspace(-15, 15, 400)
+        y_values = [f_func(x_val) for x_val in x_values]
+        y_derivative_values = [f_derivative_func(x_val) for x_val in x_values]
+        y_integrate_values = [f_integrate_func(x_val) for x_val in x_values]
+        plt.figure(figsize=(10, 8))
+        plt.plot(x_values, y_values, label=self.function)
+        plt.plot(x_values, y_derivative_values, label='Derivative', linestyle='--')
+        plt.plot(x_values, y_integrate_values, label='Integral', linestyle='--')
+        plt.xlabel('x')
+        plt.ylabel('y')
+        plt.legend()
+        plt.title('Function, Its Derivative and Integral')
+        plt.grid(True)
+        plt.show()
+
 
 # start of the program by giving the user choices to choose from
-print("   ***Welcome to Apollo Calculator***   ")    # Print a welcome message
+print("   ***Welcome to Apollo Calculator***   ")  # Print a welcome message
 print(f"  Current time is {current_time}")
 print(" ")
 print("   Here are the available modes:")
@@ -88,37 +147,10 @@ while True:
                     # Create a Calculator instance with user inputs
                     calculation = Calculator(num_1=number_1, num_2=number_2, operation=operator)
 
+                    result = calculation.calculator_suite()
+                    ans_list.append(result)
 
-                    def calculator_suite(calc, op):
-                        """Created this function simply to be able to use the ans list variable"""
-                        op = operator
-                        if operator == "+":
-                            print(calculation.addition())
-                            ans_list.append(calculation.addition())
-
-                        elif operator == "-":
-                            print(calculation.subs())
-                            ans_list.append(calculation.subs())
-
-                        elif operator == "**":
-                            print(calculation.power())
-                            ans_list.append(calculation.power())
-
-                        elif operator == "*":
-                            print(calculation.multiply())
-                            ans_list.append(calculation.multiply())
-
-                        elif operator == "/":
-                            print(calculation.division())
-                            ans_list.append(calculation.division())
-
-                        elif operator == "%":
-                            print(calculation.modulo())
-                            ans_list.append(calculation.modulo())
-                        return ""
-
-
-                    print(calculator_suite(calculation, operator))
+                    print(result)
                     ans = ans_list[0]
 
                     choice = input("-Type ans to use old result, Press Enter to Continue, Type exit to quit: ")
@@ -128,13 +160,10 @@ while True:
                             new_number_2 = float(input("-Enter second number: "))
                             new_operator = str(input("-Enter operator: "))
                             calculation = Calculator(num_1=ans, num_2=new_number_2, operation=operator)
-                            print(calculator_suite(calculation, new_operator))
-                            ans_list.append(calculation.modulo())
-                            ans = ans_list[1]
-                            print(ans)
+                            print(calculation.calculator_suite())
 
-                    elif choice.lower() == "":
-                        continue  # Continue to the next iteration of the loop
+                    elif choice.lower() == " ":
+                        continue  # Continue the loop
 
                     elif choice.lower() == "exit":
                         print("**Closing Basic Calculator, see you soon !**")
@@ -147,79 +176,47 @@ while True:
             print("** x is by default the symbol of the variable **")
             print("** WE HANDLE SIN FUNCTIONS **")
             while True:
-
-                function = input("-Enter function using x: ")
-
-                x = sp.symbols("x")   # x is the variable symbol by default as stated to the user
-
-                derivative_function = sp.diff(function, x)  # calculate derivative
-
-                integrate_function = sp.integrate(function, x)  # calculate integral
-
-                f_func = sp.lambdify(x, function, 'numpy')  # this line and below are used for plotting purposes
-
-                f_derivative_func = sp.lambdify(x, derivative_function, 'numpy')
-
-                f_integrate_func = sp.lambdify(x, integrate_function, 'numpy')
-
-                x_values = np.linspace(-15, 15, 400)
-
-                y_values = [f_func(x_val) for x_val in x_values]
-
-                y_derivative_values = [f_derivative_func(x_val) for x_val in x_values]
-
-                y_integrate_values = [f_integrate_func(x_val) for x_val in x_values]
+                new_function = input("-Enter function using x: ")
+                new_function = Function(function=new_function)
 
                 action_input = str(input("-Type D for derivative, I for integration or B for both: "))
-                if action_input.lower == "d":
-                    print(derivative_function)
+                try:
+                    if action_input.lower == "d":
+                        print(new_function.derivative())
 
-                elif action_input.lower() == "i":
-                    print(integrate_function)
+                    elif action_input.lower() == "i":
+                        print(new_function.integrate())
 
-                elif action_input.lower() == "b":
-                    print(f"**Derivative is {derivative_function}  **")
-                    print(f"**Integral is {integrate_function} + C **")
+                    elif action_input.lower() == "b":
+                        print(f"**Derivative is {new_function.derivative()}  **")
+                        print(f"**Integral is {new_function.integrate()} + C **")
+                except ValueError:
+                    print("Wrong input, Please Enter D for derivative, I for integration or B for both")
 
                 view_input = str(input("-Do you want to view the plot of the function? (Y for yes , N for no, "
                                        "E to exit program): "))
-
                 if view_input.lower() == "y":
-                    # will open a window to display the function
-                    plt.figure(figsize=(10, 8))
-                    plt.plot(x_values, y_values, label=function)
-                    plt.plot(x_values, y_derivative_values, label='Derivative', linestyle='--')
-                    plt.plot(x_values, y_integrate_values, label='Integral', linestyle='--')
-                    plt.xlabel('x')
-                    plt.ylabel('y')
-                    plt.legend()
-                    plt.title('Function, Its Derivative and Integral')
-                    plt.grid(True)
-                    plt.show()
+                    new_function.plot()
+
                 elif view_input.lower() == "n":
                     print("**Reseting Graphical Calculator**")
                     print(" ")
-                    continue
-                else:
+
+                elif view_input.lower() == "e":
                     print("**Closing Graphing Calculator, see you soon !**")
-                    break
+                    print(" ")
+                else:
+                    print("Wrong input, Try again!")
+
         if mode_choice == 3:
             print("**Welcome to Graphical only mode**")
             while True:
-                function = input("-Enter function using x: ")
+
+                function_mode3 = input("-Enter function using x: ")
+                function_mode3 = Function(function=function_mode3)  # Linking with the function class
+
                 try:
-                    x = sp.symbols("x")  # x is the variable symbol by default as stated to the user
-                    f_func = sp.lambdify(x, function, 'numpy')
-                    x_values = np.linspace(-15, 15, 400)
-                    y_values = [f_func(x_val) for x_val in x_values]
-                    plt.figure(figsize=(10, 8))
-                    plt.plot(x_values, y_values, label=function)
-                    plt.xlabel('x')
-                    plt.ylabel('y')
-                    plt.legend()
-                    plt.title(f'Plot of the function:{function}')
-                    plt.grid(True)
-                    plt.show()
+                    function_mode3.plot()
                     mode_3 = str(input("Do you wish to continue using this mode?(y or n): "))
                     try:
                         if mode_3.lower() == "y":
@@ -259,4 +256,3 @@ while True:
 
     finally:
         print("**Developed by CollectorsObservatory**")
-
